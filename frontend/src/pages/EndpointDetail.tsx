@@ -219,13 +219,15 @@ export default function EndpointDetail() {
                     )}
                     Validate Now
                   </Button>
-                  <Button
-                    variant="outline"
-                    className="gap-1.5"
-                    onClick={() => openTester(ep.url)}
-                  >
-                    <FlaskConical /> Test in Tester
-                  </Button>
+                  {ep.url.includes("/v1") && (
+                    <Button
+                      variant="outline"
+                      className="gap-1.5"
+                      onClick={() => openTester(ep.url)}
+                    >
+                      <FlaskConical /> Test in Tester
+                    </Button>
+                  )}
                   <Button
                     variant="outline"
                     className={cn("text-destructive hover:bg-destructive/10")}

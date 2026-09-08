@@ -149,19 +149,21 @@ function EndpointCard({
         {ep.url}
       </code>
       <div className="mt-auto flex gap-2 pt-2">
-        <Button
-          size="sm"
-          variant="outline"
-          disabled={testing}
-          onClick={async () => {
-            setTesting(true);
-            openTester(ep.url);
-            // Popup may be blocked; keep the button usable immediately.
-            window.setTimeout(() => setTesting(false), 500);
-          }}
-        >
-          <FlaskConical /> Test
-        </Button>
+        {ep.url.includes("/v1") && (
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={testing}
+            onClick={async () => {
+              setTesting(true);
+              openTester(ep.url);
+              // Popup may be blocked; keep the button usable immediately.
+              window.setTimeout(() => setTesting(false), 500);
+            }}
+          >
+            <FlaskConical /> Test
+          </Button>
+        )}
         <Button
           size="sm"
           variant="secondary"
