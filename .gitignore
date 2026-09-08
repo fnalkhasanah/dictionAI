@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+*.tsbuildinfo
+
+# Database (node:sqlite WAL creates -wal/-shm sidecar files)
+data/*.db
+data/*.db-journal
+data/*.db-wal
+data/*.db-shm
+
+# Exports (keep the folder structure via .gitkeep)
+data/exports/
+!data/exports/.gitkeep
+
+# Environment — keep .env.example tracked
+.env
+.env.local
+.env.*
+!.env.example
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Editor / IDE
+.vscode/
+.idea/
+
+# Testing
+coverage/
+
+# OS
+.DS_Store
+Thumbs.db

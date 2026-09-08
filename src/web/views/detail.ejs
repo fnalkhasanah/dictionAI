@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= endpoint.name %> - DictionAI</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-brand">
+      <a href="/">📖 DictionAI</a>
+    </div>
+    <div class="nav-actions">
+      <a href="/" class="btn btn-outline">← Back to Dashboard</a>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="detail-card">
+      <div class="detail-header">
+        <h1><%= endpoint.name %></h1>
+        <span class="status-badge status-<%= endpoint.status %> status-large">
+          <%= endpoint.status === 'active' ? '✅' : endpoint.status === 'dead' ? '❌' : '❓' %>
+          <%= endpoint.status.toUpperCase() %>
+        </span>
+      </div>
+
+      <div class="detail-section">
+        <h3>📝 Description</h3>
+        <p><%= endpoint.description || 'No description available.' %></p>
+      </div>
+
+      <div class="detail-section">
+        <h3>🔗 URL</h3>
+        <code class="detail-url"><%= endpoint.url %></code>
+        <a href="<%= endpoint.url %>" target="_blank" class="btn btn-sm btn-primary" style="margin-left: 10px;">Open →</a>
+      </div>
+
+      <div class="detail-grid">
+        <div class="detail-item">
+          <strong>🏷️ Category</strong>
+          <span><%= endpoint.category %></span>
+        </div>
+        <div class="detail-item">
+          <strong>🏢 Provider</strong>
+          <span><%= endpoint.provider || 'Unknown' %></span>
+        </div>
+        <div class="detail-item">
+          <strong>🔐 Authentication</strong>
+          <span>
+            <% if (endpoint.requiresAuth) { %>
+              Required<%= endpoint.authNote ? ' — ' + endpoint.authNote : '' %>
+            <% } else { %>
+              Not Required (Free Access)
+            <% } %>
+          </span>
+        </div>
+        <div class="detail-item">
+          <strong>⏱️ Response Time</strong>
+          <span><%= endpoint.responseTimeMs ? endpoint.responseTimeMs + 'ms' : 'Not checked' %></span>
+        </div>
+        <div class="detail-item">
+          <strong>🕐 Last Checked</strong>
+          <span><%= endpoint.lastChecked ? new Date(endpoint.lastChecked).toLocaleString() : 'Never' %></span>
+        </div>
+        <div class="detail-item">
+          <strong>📥 Source</strong>
+          <span><%= endpoint.source %></span>
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <h3>🏷️ Tags</h3>
+        <div class="endpoint-tags">
+          <% if (endpoint.tags && endpoint.tags.length > 0) { %>
+            <% endpoint.tags.forEach(tag => { %>
+              <span class="tag tag-large"><%= tag %></span>
+            <% }) %>
+          <% } else { %>
+            <span class="text-muted">No tags</span>
+          <% } %>
+        </div>
+      </div>
+
+      <div class="detail-actions">
+        <button onclick="validateEndpoint()" class="btn btn-primary">🔄 Validate Now</button>
+        <button onclick="deleteEndpoint()" class="btn btn-danger">🗑️ Delete</button>
+      </div>
+    </div>
+  </main>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script>
+    function showToast(message, type = 'info') {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = `toast toast-${type}`;
+      setTimeout(() => { toast.className = 'toast hidden'; }, 3000);
+    }
+
+    async function validateEndpoint() {
+      try {
+        const res = await fetch('/api/validate/<%= endpoint.id %>', { method: 'POST' });
+        const data = await res.json();
+        showToast(`Status: ${data.status} (${data.responseTimeMs}ms)`, data.status === 'active' ? 'success' : 'error');
+        setTimeout(() => location.reload(), 1000);
+      } catch (e) {
+        showToast(`Error: ${e.message}`, 'error');
+      }
+    }
+
+    async function deleteEndpoint() {
+      if (!confirm('Delete this endpoint?')) return;
+      try {
+        const res = await fetch('/api/endpoints/<%= endpoint.id %>', { method: 'DELETE' });
+        const data = await res.json();
+        if (data.success) {
+          showToast('Endpoint deleted', 'success');
+          setTimeout(() => window.location.href = '/', 500);
+        }
+      } catch (e) {
+        showToast(`Error: ${e.message}`, 'error');
+      }
+    }
+  </script>
+</body>
+</html>

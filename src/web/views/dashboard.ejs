@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DictionAI — The dictionary of free AI APIs</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-brand">
+      <a href="/">📖 DictionAI</a>
+    </div>
+    <div class="nav-actions">
+      <button onclick="runScrape()" class="btn btn-primary" id="scrapeBtn">🔍 Scrape Now</button>
+      <button onclick="validateAll()" class="btn btn-secondary" id="validateBtn">✅ Validate All</button>
+      <button onclick="exportData('json')" class="btn btn-outline">📄 Export JSON</button>
+      <button onclick="exportData('csv')" class="btn btn-outline">📊 Export CSV</button>
+    </div>
+  </nav>
+
+  <main class="container">
+    <!-- Stats Cards -->
+    <section class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number"><%= stats.total %></div>
+        <div class="stat-label">Total APIs</div>
+      </div>
+      <div class="stat-card stat-active">
+        <div class="stat-number"><%= stats.active %></div>
+        <div class="stat-label">Active</div>
+      </div>
+      <div class="stat-card stat-dead">
+        <div class="stat-number"><%= stats.dead %></div>
+        <div class="stat-label">Dead</div>
+      </div>
+      <div class="stat-card stat-unknown">
+        <div class="stat-number"><%= stats.unknown %></div>
+        <div class="stat-label">Unknown</div>
+      </div>
+    </section>
+
+    <!-- Category Stats -->
+    <% if (Object.keys(stats.byCategory).length > 0) { %>
+    <section class="category-stats">
+      <h3>📊 By Category</h3>
+      <div class="category-chips">
+        <% for (const [cat, count] of Object.entries(stats.byCategory)) { %>
+          <a href="/?category=<%= cat %>" class="category-chip <%= filters.category === cat ? 'active' : '' %>">
+            <%= cat %> (<%= count %>)
+          </a>
+        <% } %>
+      </div>
+    </section>
+    <% } %>
+
+    <!-- Filters -->
+    <section class="filters">
+      <form method="GET" action="/" class="filter-form">
+        <input type="text" name="search" placeholder="Search APIs..." value="<%= filters.search || '' %>" class="filter-input">
+        <select name="category" class="filter-select">
+          <option value="">All Categories</option>
+          <option value="text-generation" <%= filters.category === 'text-generation' ? 'selected' : '' %>>🤖 Text Generation</option>
+          <option value="image-generation" <%= filters.category === 'image-generation' ? 'selected' : '' %>>🎨 Image Generation</option>
+          <option value="audio-tts-stt" <%= filters.category === 'audio-tts-stt' ? 'selected' : '' %>>🗣️ Audio/TTS/STT</option>
+          <option value="embeddings" <%= filters.category === 'embeddings' ? 'selected' : '' %>>📐 Embeddings</option>
+          <option value="translation" <%= filters.category === 'translation' ? 'selected' : '' %>>🌐 Translation</option>
+          <option value="search-rag" <%= filters.category === 'search-rag' ? 'selected' : '' %>>🔍 Search/RAG</option>
+          <option value="other" <%= filters.category === 'other' ? 'selected' : '' %>>📊 Other</option>
+        </select>
+        <select name="status" class="filter-select">
+          <option value="">All Status</option>
+          <option value="active" <%= filters.status === 'active' ? 'selected' : '' %>>✅ Active</option>
+          <option value="dead" <%= filters.status === 'dead' ? 'selected' : '' %>>❌ Dead</option>
+          <option value="unknown" <%= filters.status === 'unknown' ? 'selected' : '' %>>❓ Unknown</option>
+        </select>
+        <button type="submit" class="btn btn-secondary">Filter</button>
+        <% if (filters.category || filters.status || filters.search) { %>
+          <a href="/" class="btn btn-outline">Clear</a>
+        <% } %>
+      </form>
+    </section>
+
+    <!-- Endpoints List -->
+    <section class="endpoints-section">
+      <h3>📋 Endpoints (<%= endpoints.length %>)</h3>
+
+      <% if (endpoints.length === 0) { %>
+        <div class="empty-state">
+          <p>🔍 No endpoints found. Click <strong>"Scrape Now"</strong> to discover free AI APIs!</p>
+        </div>
+      <% } else { %>
+        <div class="endpoints-grid">
+          <% endpoints.forEach(ep => { %>
+            <div class="endpoint-card">
+              <div class="endpoint-header">
+                <h4 class="endpoint-name">
+                  <a href="/endpoint/<%= ep.id %>"><%= ep.name %></a>
+                </h4>
+                <span class="status-badge status-<%= ep.status %>">
+                  <%= ep.status === 'active' ? '✅' : ep.status === 'dead' ? '❌' : '❓' %>
+                  <%= ep.status %>
+                </span>
+              </div>
+              <p class="endpoint-description"><%= ep.description ? ep.description.substring(0, 120) + (ep.description.length > 120 ? '...' : '') : 'No description' %></p>
+              <div class="endpoint-meta">
+                <span class="meta-item">🏷️ <%= ep.category %></span>
+                <span class="meta-item">🏢 <%= ep.provider %></span>
+                <% if (ep.requiresAuth) { %>
+                  <span class="meta-item auth-required">🔐 Auth Required<%= ep.authNote ? ': ' + ep.authNote : '' %></span>
+                <% } else { %>
+                  <span class="meta-item auth-free">🔓 No Auth</span>
+                <% } %>
+                <% if (ep.responseTimeMs) { %>
+                  <span class="meta-item">⚡ <%= ep.responseTimeMs %>ms</span>
+                <% } %>
+              </div>
+              <div class="endpoint-tags">
+                <% ep.tags.forEach(tag => { %>
+                  <span class="tag"><%= tag %></span>
+                <% }) %>
+              </div>
+              <div class="endpoint-url">
+                <code><%= ep.url %></code>
+              </div>
+              <div class="endpoint-actions">
+                <button onclick="validateSingle(<%= ep.id %>)" class="btn btn-sm btn-secondary">🔄 Validate</button>
+                <button onclick="deleteEndpoint(<%= ep.id %>)" class="btn btn-sm btn-danger">🗑️ Delete</button>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      <% } %>
+    </section>
+  </main>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script>
+    function showToast(message, type = 'info') {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = `toast toast-${type}`;
+      setTimeout(() => { toast.className = 'toast hidden'; }, 3000);
+    }
+
+    async function runScrape() {
+      const btn = document.getElementById('scrapeBtn');
+      btn.disabled = true;
+      btn.textContent = '⏳ Scraping...';
+      try {
+        const res = await fetch('/api/scrape', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+        const data = await res.json();
+        if (data.success) {
+          showToast(`Found ${data.totalEndpoints} endpoints (${data.totalErrors} errors)`, 'success');
+          setTimeout(() => location.reload(), 1000);
+        } else {
+          showToast(`Scrape failed: ${data.error}`, 'error');
+        }
+      } catch (e) {
+        showToast(`Error: ${e.message}`, 'error');
+      }
+      btn.disabled = false;
+      btn.textContent = '🔍 Scrape Now';
+    }
+
+    async function validateAll() {
+      const btn = document.getElementById('validateBtn');
+      btn.disabled = true;
+      btn.textContent = '⏳ Validating...';
+      try {
+        const res = await fetch('/api/validate-all', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+        const data = await res.json();
+        if (data.success) {
+          showToast(`Validated ${data.total}: ${data.active} active, ${data.dead} dead`, 'success');
+          setTimeout(() => location.reload(), 1000);
+        } else {
+          showToast(`Validation failed: ${data.error}`, 'error');
+        }
+      } catch (e) {
+        showToast(`Error: ${e.message}`, 'error');
+      }
+      btn.disabled = false;
+      btn.textContent = '✅ Validate All';
+    }
+
+    async function validateSingle(id) {
+      try {
+        const res = await fetch(`/api/validate/${id}`, { method: 'POST' });
+        const data = await res.json();
+        showToast(`Status: ${data.status} (${data.responseTimeMs}ms)`, data.status === 'active' ? 'success' : 'error');
+        setTimeout(() => location.reload(), 1000);
+      } catch (e) {
+        showToast(`Error: ${e.message}`, 'error');
+      }
+    }
+
+    async function deleteEndpoint(id) {
+      if (!confirm('Delete this endpoint?')) return;
+      try {
+        const res = await fetch(`/api/endpoints/${id}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (data.success) {
+          showToast('Endpoint deleted', 'success');
+          setTimeout(() => location.reload(), 500);
+        }
+      } catch (e) {
+        showToast(`Error: ${e.message}`, 'error');
+      }
+    }
+
+    async function exportData(format) {
+      try {
+        const res = await fetch('/api/export', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ format })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(`Exported to ${data.path}`, 'success');
+        } else {
+          showToast(`Export failed: ${data.error}`, 'error');
+        }
+      } catch (e) {
+        showToast(`Error: ${e.message}`, 'error');
+      }
+    }
+  </script>
+</body>
+</html>
