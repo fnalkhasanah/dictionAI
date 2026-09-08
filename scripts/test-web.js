@@ -27,11 +27,29 @@ const server = app.listen(TEST_PORT, async () => {
     const detailHtml = await detail.text();
     console.log("GET /endpoint/1 ->", detail.status, "| has name:", detailHtml.includes("OpenAI API"));
 
+    const testerRedirect = await fetch(`${base}/tester`, { redirect: "manual" });
+    console.log("GET /tester ->", testerRedirect.status, "| location:", testerRedirect.headers.get("location"));
+
+    const testerPage = await fetch(`${base}/tester/`);
+    const testerHtml = await testerPage.text();
+    console.log("GET /tester/ ->", testerPage.status, "| has brand:", testerHtml.includes("AI Model Tester"));
+
+    const testerApi = await fetch(`${base}/tester/api/models`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url: "http://localhost:1/v1", key: "test" }),
+    });
+    const testerApiJson = await testerApi.json();
+    console.log("POST /tester/api/models ->", testerApi.status, "| responds:", "models" in testerApiJson || "error" in testerApiJson);
+
     const allOk =
       dash.status === 200 && dashHtml.includes("DictionAI") &&
       stats.status === 200 && statsJson.total >= 28 &&
       eps.status === 200 && epsJson.total >= 10 &&
-      detail.status === 200 && detailHtml.includes("OpenAI API");
+      detail.status === 200 && detailHtml.includes("OpenAI API") &&
+      testerRedirect.status === 302 && testerRedirect.headers.get("location") === "/tester/" &&
+      testerPage.status === 200 && testerHtml.includes("AI Model Tester") &&
+      testerApi.status === 200 && ("models" in testerApiJson || "error" in testerApiJson);
 
     console.log(allOk ? "WEB UI SMOKE TEST PASSED" : "WEB UI SMOKE TEST FAILED");
     // NOTE: use exitCode + graceful close instead of process.exit() to avoid a

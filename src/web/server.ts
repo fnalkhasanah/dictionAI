@@ -3,6 +3,7 @@ import path from "path";
 import { config } from "../config";
 import { createRoutes } from "./routes";
 import { initDatabase } from "../storage/db";
+import testerApp from "./tester";
 
 const app = express();
 const PORT = config.web.port;
@@ -21,6 +22,14 @@ app.use("/static", express.static(path.join(__dirname, "views", "static")));
 // Body parsing
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// AI Model Tester — vendored in tools/model-tester, mounted as a sub-app.
+// Redirect /tester -> /tester/ so the tester's relative API paths (`api/...`)
+// resolve to /tester/api/... instead of /api/...
+// NOTE: use a regex route — Express non-strict routing makes the string
+// route "/tester" also match "/tester/", which would loop forever.
+app.get(/^\/tester$/, (req, res) => res.redirect("/tester/"));
+app.use("/tester", testerApp);
 
 // Routes
 app.use("/", createRoutes());

@@ -81,6 +81,16 @@ ai-api-scrapper/
 - [x] Static CSS + toast notifications
 - [x] Smoke test (scripts/test-web.js)
 
+### Phase 6: AI Model Tester Integration (2026-09-09)
+- [x] Vendor `model-tester` (D:\Project\nodejs\model-tester) ke `tools/model-tester/` (server.js + public/ + LICENSE + README + vercel.json)
+- [x] Guard listen tester: `require.main === module` (bukan NODE_ENV) agar tidak konflik port saat di-mount
+- [x] API paths di `public/index.html` diubah ke relatif (`api/...`) agar kompatibel dengan prefix `/tester/`
+- [x] Mount sebagai sub-app Express di `/tester/` + redirect `/tester` → `/tester/` (src/web/tester.ts + server.ts)
+- [x] Link navbar "🧪 Tester" di dashboard + detail page
+- [x] Dependency `openai ^4.50.0` + script `npm run tester` (standalone)
+- [x] Smoke test route `/tester/` + POST /tester/api/models
+- [x] README section Model Tester
+
 ## Categories
 - 🤖 Text Generation (ChatGPT-compatible, Llama, etc.)
 - 🎨 Image Generation (Stable Diffusion, Flux, etc.)

@@ -13,6 +13,7 @@ Aplikasi Node.js/TypeScript untuk **mengumpulkan, memvalidasi, dan mengkategorik
 - 💾 **SQLite storage** — no native dependencies (pakai `node:sqlite` bawaan Node)
 - 📄 **Export JSON/CSV**
 - 🌐 **Web UI dashboard** dengan filter, search, dan aksi langsung
+- 🧪 **AI Model Tester** terintegrasi — tes endpoint & API key langsung dari `/tester/` (chat, tools, vision, streaming, compare)
 - 💻 **CLI lengkap** untuk semua operasi
 
 ## 📋 Persyaratan
@@ -61,6 +62,7 @@ npm run web
 | `npm run list` | List semua endpoint |
 | `npm run list -- --category text-generation --status active --auth` | List dengan filter |
 | `npm run seed` | Seed dengan API free terkenal |
+| `npm run tester` | Jalanin Model Tester standalone di port 3000 |
 
 ## 🌐 Web UI
 
@@ -75,6 +77,24 @@ Dashboard di `http://localhost:3000`:
 - List endpoint dengan badge status, auth, response time, tags
 - Tombol aksi: **Scrape Now**, **Validate All**, **Validate per endpoint**, **Export JSON/CSV**, **Delete**
 - Detail page per endpoint
+- Link navbar **🧪 Tester** → buka `http://localhost:3000/tester/`
+
+### 🔬 AI Model Tester (`/tester/`)
+
+Tool tes AI endpoint & API key yang di-vendor dari project `model-tester` ke `tools/model-tester/`, di-mount sebagai sub-app di `/tester/`:
+
+- **Tester** — chat ke endpoint OpenAI-compatible, Anthropic, atau Gemini dengan metric TTFT, latency, TPS, token
+- **Chat** — streaming chat penuh dengan preset (OpenRouter, Groq, Together, Ollama, LM Studio, vLLM)
+- **Compat** — uji kemampuan model: `chat`, `tools`, `json`, `stream`, `vision` (deteksi rate-limit/quota)
+- **Compare** — bandingkan 2 model side-by-side
+- **History** — riwayat percobaan (localStorage)
+
+Bisa juga dijalankan standalone:
+
+```bash
+npm run tester
+# buka http://localhost:3000 (ganti PORT env jika bentrok)
+```
 
 ### REST API
 
@@ -108,10 +128,13 @@ src/
 │   └── categorize.ts         # Auto-kategorisasi + deteksi auth (keyword-based)
 ├── storage/
 │   └── db.ts                 # node:sqlite storage layer (upsert, query, stats)
-└── web/
-    ├── server.ts             # Express app (listen hanya saat dijalankan langsung)
-    ├── routes.ts             # Web pages + REST API
-    └── views/                # EJS templates + CSS
+├── web/
+│   ├── server.ts             # Express app (listen hanya saat dijalankan langsung)
+│   ├── routes.ts             # Web pages + REST API
+│   ├── tester.ts             # Mount model-tester (tools/model-tester) di /tester/
+│   └── views/                # EJS templates + CSS
+tools/
+└── model-tester/             # Vendor AI Model Tester (server.js + public/ + LICENSE)
 ```
 
 ## ⚙️ Konfigurasi (.env)

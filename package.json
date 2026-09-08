@@ -11,7 +11,8 @@
     "validate": "ts-node src/index.ts validate",
     "export": "ts-node src/index.ts export",
     "list": "ts-node src/index.ts list",
-    "web": "ts-node src/web/server.ts"
+    "web": "ts-node src/web/server.ts",
+    "tester": "node tools/model-tester/server.js"
   },
   "keywords": [
     "ai",
@@ -26,7 +27,8 @@
     "commander": "^11.1.0",
     "dotenv": "^16.3.1",
     "ejs": "^3.1.9",
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "openai": "^4.50.0"
   },
   "devDependencies": {
     "@types/commander": "^2.12.2",
