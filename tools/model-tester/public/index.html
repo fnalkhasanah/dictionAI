@@ -96,6 +96,10 @@
   <header class="sticky top-0 z-40 shrink-0 bg-zinc-50/90 dark:bg-zinc-950/90 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 px-4 md:px-6 py-3">
     <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
       <div class="flex items-center gap-3">
+        <!-- Back to Dashboard (only visible when mounted inside DictionAI) -->
+        <a href=".." id="backBtn" title="Back to Dashboard" class="hidden p-2 rounded-lg bg-zinc-200/60 dark:bg-zinc-900/80 border border-zinc-300/50 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-300 dark:hover:bg-zinc-800 transition-all">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        </a>
         <div class="h-9 w-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
           <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
         </div>
@@ -359,6 +363,12 @@
       const savedKey = localStorage.getItem('model_tester_key');
       if (savedUrl) $('url').value = savedUrl;
       if (savedKey) $('key').value = savedKey;
+
+      // Show a back link only when mounted inside DictionAI (/tester/...)
+      if (location.pathname.startsWith('/tester')) {
+        const back = document.getElementById('backBtn');
+        if (back) back.classList.remove('hidden');
+      }
 
       initTomSelect('preset');
       initTomSelect('cmpModelA');
