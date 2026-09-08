@@ -78,6 +78,7 @@ Dashboard di `http://localhost:3000`:
 - Tombol aksi: **Scrape Now**, **Validate All**, **Validate per endpoint**, **Export JSON/CSV**, **Delete**
 - Detail page per endpoint
 - Link navbar **🧪 Tester** → buka `http://localhost:3000/tester/`
+- Tombol **🧪 Test** di tiap kartu endpoint (dan halaman detail) → buka Model Tester dengan URL endpoint terisi otomatis
 
 ### 🔬 AI Model Tester (`/tester/`)
 

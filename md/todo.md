@@ -89,6 +89,7 @@ ai-api-scrapper/
 - [x] Link navbar "🧪 Tester" di dashboard + detail page
 - [x] Dependency `openai ^4.50.0` + script `npm run tester` (standalone)
 - [x] Smoke test route `/tester/` + POST /tester/api/models
+- [x] Tombol "🧪 Test" per endpoint (dashboard + detail) — pre-fill URL tester via localStorage
 - [x] README section Model Tester
 
 ## Categories

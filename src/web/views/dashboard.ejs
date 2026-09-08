@@ -125,6 +125,7 @@
                 <code><%= ep.url %></code>
               </div>
               <div class="endpoint-actions">
+                <button onclick="openTester(this)" data-url="<%= ep.url %>" class="btn btn-sm btn-outline" title="Open endpoint in Model Tester">🧪 Test</button>
                 <button onclick="validateSingle(<%= ep.id %>)" class="btn btn-sm btn-secondary">🔄 Validate</button>
                 <button onclick="deleteEndpoint(<%= ep.id %>)" class="btn btn-sm btn-danger">🗑️ Delete</button>
               </div>
@@ -208,6 +209,12 @@
       } catch (e) {
         showToast(`Error: ${e.message}`, 'error');
       }
+    }
+
+    function openTester(btn) {
+      // Pre-fill the Model Tester URL field (same origin => shared localStorage)
+      localStorage.setItem('model_tester_url', btn.dataset.url);
+      window.open('/tester/', '_blank');
     }
 
     async function exportData(format) {

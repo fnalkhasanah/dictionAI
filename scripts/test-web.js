@@ -13,7 +13,7 @@ const server = app.listen(TEST_PORT, async () => {
 
     const dash = await fetch(`${base}/`);
     const dashHtml = await dash.text();
-    console.log("GET / ->", dash.status, "| has title:", dashHtml.includes("DictionAI"));
+    console.log("GET / ->", dash.status, "| has title:", dashHtml.includes("DictionAI"), "| has tester btn:", dashHtml.includes("openTester"));
 
     const stats = await fetch(`${base}/api/stats`);
     const statsJson = await stats.json();
@@ -43,7 +43,7 @@ const server = app.listen(TEST_PORT, async () => {
     console.log("POST /tester/api/models ->", testerApi.status, "| responds:", "models" in testerApiJson || "error" in testerApiJson);
 
     const allOk =
-      dash.status === 200 && dashHtml.includes("DictionAI") &&
+      dash.status === 200 && dashHtml.includes("DictionAI") && dashHtml.includes("openTester") &&
       stats.status === 200 && statsJson.total >= 28 &&
       eps.status === 200 && epsJson.total >= 10 &&
       detail.status === 200 && detailHtml.includes("OpenAI API") &&
