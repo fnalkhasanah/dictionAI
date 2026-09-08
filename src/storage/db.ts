@@ -118,6 +118,10 @@ export function getEndpoints(filters?: ListFilters): AiApiEndpoint[] {
     const searchTerm = `%${filters.search}%`;
     params.push(searchTerm, searchTerm, searchTerm);
   }
+  if (filters?.tag) {
+    query += " AND EXISTS (SELECT 1 FROM json_each(endpoints.tags) WHERE json_each.value = ?)";
+    params.push(filters.tag);
+  }
 
   query += " ORDER BY created_at DESC";
 
@@ -133,6 +137,16 @@ export function getEndpointById(id: number): AiApiEndpoint | undefined {
 export function getAllEndpoints(): AiApiEndpoint[] {
   const rows = db.prepare("SELECT * FROM endpoints ORDER BY created_at DESC").all() as any[];
   return rows.map(rowToEndpoint);
+}
+
+export function getAllTags(): { tag: string; count: number }[] {
+  const rows = db.prepare(`
+    SELECT value as tag, COUNT(*) as count
+    FROM endpoints, json_each(endpoints.tags)
+    GROUP BY value
+    ORDER BY count DESC, value ASC
+  `).all() as any[];
+  return rows.map((r) => ({ tag: r.tag, count: Number(r.count) }));
 }
 
 export function getEndpointsNeedingCheck(): AiApiEndpoint[] {

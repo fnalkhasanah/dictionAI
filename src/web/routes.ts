@@ -3,6 +3,7 @@ import {
   getEndpoints,
   getEndpointById,
   getStats,
+  getAllTags,
   deleteEndpoint,
 } from "../storage/db";
 import { runScrapers } from "../scrapers";
@@ -23,17 +24,20 @@ export function createRoutes(): Router {
     const category = req.query.category as ApiCategory | undefined;
     const status = req.query.status as ApiStatus | undefined;
     const search = req.query.search as string | undefined;
+    const tag = req.query.tag as string | undefined;
 
     const endpoints = getEndpoints({
       category,
       status,
       search,
+      tag,
     });
 
     res.render("dashboard", {
       stats,
       endpoints,
-      filters: { category, status, search },
+      filters: { category, status, search, tag },
+      tags: getAllTags(),
     });
   });
 
@@ -62,6 +66,7 @@ export function createRoutes(): Router {
       status: req.query.status as ApiStatus,
       search: req.query.search as string,
       provider: req.query.provider as string,
+      tag: req.query.tag as string,
       requiresAuth: req.query.requiresAuth === "true"
         ? true
         : req.query.requiresAuth === "false"

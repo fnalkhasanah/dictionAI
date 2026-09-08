@@ -123,6 +123,7 @@ program
   .option("--status <status>", "Filter by status (active, dead, unknown)")
   .option("--search <query>", "Search by name, description, or URL")
   .option("--provider <provider>", "Filter by provider")
+  .option("--tag <tag>", "Filter by tag")
   .option("--auth", "Only show endpoints requiring auth")
   .option("--no-auth", "Only show endpoints NOT requiring auth")
   .option("--json", "Output as JSON")
@@ -136,6 +137,7 @@ program
         status: options.status as ApiStatus,
         search: options.search as string,
         provider: options.provider as string,
+        tag: options.tag as string,
         requiresAuth,
       });
 
@@ -162,6 +164,9 @@ program
 
         console.log(`${prefix} ${symbol} ${auth} [${ep.category.padEnd(16)}] ${ep.name}`);
         console.log(`         ${ep.url}`);
+        if (ep.tags.length > 0) {
+          console.log(`         🏷️  ${ep.tags.join(", ")}`);
+        }
         if (ep.authNote) {
           console.log(`         ⚠️  ${ep.authNote}`);
         }

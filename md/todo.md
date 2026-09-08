@@ -75,6 +75,7 @@ ai-api-scrapper/
 ### Phase 5: Web UI
 - [x] Express server setup (auto-listen saat dijalankan langsung)
 - [x] Dashboard page (stats, filter, search, list endpoint)
+- [x] Filter tag (dropdown + klik tag di kartu endpoint) + CLI `list --tag`
 - [x] Endpoint detail page
 - [x] REST API (stats, list, validate, validate-all, scrape, export, delete)
 - [x] Export from web UI

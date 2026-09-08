@@ -75,8 +75,14 @@
           <option value="dead" <%= filters.status === 'dead' ? 'selected' : '' %>>❌ Dead</option>
           <option value="unknown" <%= filters.status === 'unknown' ? 'selected' : '' %>>❓ Unknown</option>
         </select>
+        <select name="tag" class="filter-select">
+          <option value="">All Tags</option>
+          <% tags.forEach(t => { %>
+            <option value="<%= t.tag %>" <%= filters.tag === t.tag ? 'selected' : '' %>><%= t.tag %> (<%= t.count %>)</option>
+          <% }) %>
+        </select>
         <button type="submit" class="btn btn-secondary">Filter</button>
-        <% if (filters.category || filters.status || filters.search) { %>
+        <% if (filters.category || filters.status || filters.search || filters.tag) { %>
           <a href="/" class="btn btn-outline">Clear</a>
         <% } %>
       </form>
@@ -118,7 +124,7 @@
               </div>
               <div class="endpoint-tags">
                 <% ep.tags.forEach(tag => { %>
-                  <span class="tag"><%= tag %></span>
+                  <a href="/?tag=<%= encodeURIComponent(tag) %>" class="tag tag-link" title="Filter by tag"><%= tag %></a>
                 <% }) %>
               </div>
               <div class="endpoint-url">

@@ -61,6 +61,7 @@ npm run web
 | `npm run export -- --format csv --category image-generation` | Export CSV per kategori |
 | `npm run list` | List semua endpoint |
 | `npm run list -- --category text-generation --status active --auth` | List dengan filter |
+| `npm run list -- --tag free` | List dengan filter tag |
 | `npm run seed` | Seed dengan API free terkenal |
 | `npm run tester` | Jalanin Model Tester standalone di port 3000 |
 
@@ -73,7 +74,7 @@ npm run web
 Dashboard di `http://localhost:3000`:
 
 - Stat card: total / active / dead / unknown
-- Filter kategori, status, dan search
+- Filter kategori, status, search, dan **tag** (dropdown + klik tag pada kartu endpoint)
 - List endpoint dengan badge status, auth, response time, tags
 - Tombol aksi: **Scrape Now**, **Validate All**, **Validate per endpoint**, **Export JSON/CSV**, **Delete**
 - Detail page per endpoint
@@ -102,7 +103,7 @@ npm run tester
 | Endpoint | Method | Deskripsi |
 |----------|--------|-----------|
 | `/api/stats` | GET | Statistik |
-| `/api/endpoints` | GET | List (filter via query: `category`, `status`, `search`, `provider`, `requiresAuth`) |
+| `/api/endpoints` | GET | List (filter via query: `category`, `status`, `search`, `provider`, `tag`, `requiresAuth`) |
 | `/api/endpoints/:id` | GET | Detail endpoint |
 | `/api/endpoints/:id` | DELETE | Hapus endpoint |
 | `/api/scrape` | POST | Jalankan scraping (body: `{"sources": ["github-lists"]}`) |

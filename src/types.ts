@@ -60,4 +60,5 @@ export interface ListFilters {
   search?: string;
   provider?: string;
   requiresAuth?: boolean;
+  tag?: string;
 }

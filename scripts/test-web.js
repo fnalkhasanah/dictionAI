@@ -13,7 +13,7 @@ const server = app.listen(TEST_PORT, async () => {
 
     const dash = await fetch(`${base}/`);
     const dashHtml = await dash.text();
-    console.log("GET / ->", dash.status, "| has title:", dashHtml.includes("DictionAI"), "| has tester btn:", dashHtml.includes("openTester"));
+    console.log("GET / ->", dash.status, "| has title:", dashHtml.includes("DictionAI"), "| has tester btn:", dashHtml.includes("openTester"), "| has tag filter:", dashHtml.includes('name="tag"'));
 
     const stats = await fetch(`${base}/api/stats`);
     const statsJson = await stats.json();
@@ -22,6 +22,10 @@ const server = app.listen(TEST_PORT, async () => {
     const eps = await fetch(`${base}/api/endpoints?category=text-generation`);
     const epsJson = await eps.json();
     console.log("GET /api/endpoints ->", eps.status, "| text-gen count:", epsJson.total);
+
+    const tagged = await fetch(`${base}/api/endpoints?tag=free`);
+    const taggedJson = await tagged.json();
+    console.log("GET /api/endpoints?tag=free ->", tagged.status, "| count:", taggedJson.total);
 
     const detail = await fetch(`${base}/endpoint/1`);
     const detailHtml = await detail.text();
@@ -43,9 +47,10 @@ const server = app.listen(TEST_PORT, async () => {
     console.log("POST /tester/api/models ->", testerApi.status, "| responds:", "models" in testerApiJson || "error" in testerApiJson);
 
     const allOk =
-      dash.status === 200 && dashHtml.includes("DictionAI") && dashHtml.includes("openTester") &&
+      dash.status === 200 && dashHtml.includes("DictionAI") && dashHtml.includes("openTester") && dashHtml.includes('name="tag"') &&
       stats.status === 200 && statsJson.total >= 28 &&
       eps.status === 200 && epsJson.total >= 10 &&
+      tagged.status === 200 && taggedJson.total >= 5 &&
       detail.status === 200 && detailHtml.includes("OpenAI API") &&
       testerRedirect.status === 302 && testerRedirect.headers.get("location") === "/tester/" &&
       testerPage.status === 200 && testerHtml.includes("AI Model Tester") &&

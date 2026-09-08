@@ -321,6 +321,15 @@ body {
   font-weight: 600;
 }
 
+.tag-link {
+  text-decoration: none;
+  transition: background 0.15s;
+}
+
+.tag-link:hover {
+  background: rgba(108, 92, 231, 0.3);
+}
+
 .tag-large {
   font-size: 0.85rem;
   padding: 5px 14px;
