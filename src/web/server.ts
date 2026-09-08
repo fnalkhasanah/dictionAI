@@ -12,13 +12,6 @@ const HOST = config.web.host;
 // Initialize database
 initDatabase();
 
-// View engine
-app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "views"));
-
-// Static files
-app.use("/static", express.static(path.join(__dirname, "views", "static")));
-
 // Body parsing
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -31,8 +24,21 @@ app.use(express.urlencoded({ extended: true }));
 app.get(/^\/tester$/, (req, res) => res.redirect("/tester/"));
 app.use("/tester", testerApp);
 
-// Routes
+// REST API (dashboard/data routes)
 app.use("/", createRoutes());
+
+// PWA / SPA frontend (built by Vite into dist/www)
+const WWW_DIR = path.join(__dirname, "..", "..", "dist", "www");
+app.use(express.static(WWW_DIR));
+
+// SPA fallback: any GET that is not an API/tester path gets the app shell so
+// client-side routes (/ and /endpoint/:id) work on refresh.
+app.use((req, res, next) => {
+  if (req.method === "GET" && !req.path.startsWith("/api/") && !req.path.startsWith("/tester")) {
+    return res.sendFile(path.join(WWW_DIR, "index.html"));
+  }
+  next();
+});
 
 // Only start the HTTP server when this file is executed directly
 // (e.g. `npm run web` or `node dist/web/server.js`).

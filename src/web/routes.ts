@@ -15,47 +15,6 @@ export function createRoutes(): Router {
   const router = Router();
 
   // ==========================================
-  // Web UI Pages
-  // ==========================================
-
-  // Dashboard
-  router.get("/", (req: Request, res: Response) => {
-    const stats = getStats();
-    const category = req.query.category as ApiCategory | undefined;
-    const status = req.query.status as ApiStatus | undefined;
-    const search = req.query.search as string | undefined;
-    const tag = req.query.tag as string | undefined;
-
-    const endpoints = getEndpoints({
-      category,
-      status,
-      search,
-      tag,
-    });
-
-    res.render("dashboard", {
-      stats,
-      endpoints,
-      filters: { category, status, search, tag },
-      tags: getAllTags(),
-    });
-  });
-
-  // Endpoint detail
-  router.get("/endpoint/:id", (req: Request, res: Response) => {
-    const id = parseInt(req.params.id, 10);
-    const endpoint = getEndpointById(id);
-
-    if (!endpoint) {
-      return res.status(404).render("error", {
-        message: "Endpoint not found",
-      });
-    }
-
-    res.render("detail", { endpoint });
-  });
-
-  // ==========================================
   // API Routes (JSON)
   // ==========================================
 
@@ -108,6 +67,11 @@ export function createRoutes(): Router {
   router.get("/api/stats", (req: Request, res: Response) => {
     const stats = getStats();
     res.json(stats);
+  });
+
+  // All tags with counts (for the filter dropdown)
+  router.get("/api/tags", (req: Request, res: Response) => {
+    res.json(getAllTags());
   });
 
   // Scrape

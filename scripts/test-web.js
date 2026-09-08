@@ -13,7 +13,7 @@ const server = app.listen(TEST_PORT, async () => {
 
     const dash = await fetch(`${base}/`);
     const dashHtml = await dash.text();
-    console.log("GET / ->", dash.status, "| has title:", dashHtml.includes("DictionAI"), "| has tester btn:", dashHtml.includes("openTester"), "| has tag filter:", dashHtml.includes('name="tag"'));
+    console.log("GET / ->", dash.status, "| has app shell:", dashHtml.includes('id="root"'), "| has manifest link:", dashHtml.includes("manifest.webmanifest"));
 
     const stats = await fetch(`${base}/api/stats`);
     const statsJson = await stats.json();
@@ -27,9 +27,23 @@ const server = app.listen(TEST_PORT, async () => {
     const taggedJson = await tagged.json();
     console.log("GET /api/endpoints?tag=free ->", tagged.status, "| count:", taggedJson.total);
 
+    const tags = await fetch(`${base}/api/tags`);
+    const tagsJson = await tags.json();
+    console.log("GET /api/tags ->", tags.status, "| tag list size:", Array.isArray(tagsJson) ? tagsJson.length : -1);
+
     const detail = await fetch(`${base}/endpoint/1`);
     const detailHtml = await detail.text();
-    console.log("GET /endpoint/1 ->", detail.status, "| has name:", detailHtml.includes("OpenAI API"));
+    console.log("GET /endpoint/1 ->", detail.status, "| has app shell:", detailHtml.includes('id="root"'));
+
+    const manifest = await fetch(`${base}/manifest.webmanifest`);
+    const manifestJson = await manifest.json();
+    console.log("GET /manifest.webmanifest ->", manifest.status, "| name:", manifestJson.name);
+
+    const sw = await fetch(`${base}/sw.js`);
+    console.log("GET /sw.js ->", sw.status);
+
+    const icon = await fetch(`${base}/icons/icon-192.png`);
+    console.log("GET /icons/icon-192.png ->", icon.status, "|", icon.headers.get("content-type"));
 
     const testerRedirect = await fetch(`${base}/tester`, { redirect: "manual" });
     console.log("GET /tester ->", testerRedirect.status, "| location:", testerRedirect.headers.get("location"));
@@ -47,11 +61,15 @@ const server = app.listen(TEST_PORT, async () => {
     console.log("POST /tester/api/models ->", testerApi.status, "| responds:", "models" in testerApiJson || "error" in testerApiJson);
 
     const allOk =
-      dash.status === 200 && dashHtml.includes("DictionAI") && dashHtml.includes("openTester") && dashHtml.includes('name="tag"') &&
+      dash.status === 200 && dashHtml.includes('id="root"') && dashHtml.includes("manifest.webmanifest") &&
       stats.status === 200 && statsJson.total >= 28 &&
       eps.status === 200 && epsJson.total >= 10 &&
       tagged.status === 200 && taggedJson.total >= 5 &&
-      detail.status === 200 && detailHtml.includes("OpenAI API") &&
+      tags.status === 200 && Array.isArray(tagsJson) && tagsJson.length >= 1 &&
+      detail.status === 200 && detailHtml.includes('id="root"') &&
+      manifest.status === 200 && manifestJson.name && manifestJson.name.includes("DictionAI") &&
+      sw.status === 200 &&
+      icon.status === 200 &&
       testerRedirect.status === 302 && testerRedirect.headers.get("location") === "/tester/" &&
       testerPage.status === 200 && testerHtml.includes("AI Model Tester") &&
       testerApi.status === 200 && ("models" in testerApiJson || "error" in testerApiJson);

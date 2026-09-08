@@ -93,6 +93,17 @@ ai-api-scrapper/
 - [x] Tombol "🧪 Test" per endpoint (dashboard + detail) — pre-fill URL tester via localStorage
 - [x] README section Model Tester
 
+### Phase 7: PWA + shadcn/ui UI (2026-09-09)
+- [x] Arsitektur: React SPA (Vite) diserve Express API yang sama; tester tetap di `/tester/`
+- [x] PWA: manifest.webmanifest + service worker (vite-plugin-pwa, auto-register) + icon PNG (dibuat via scripts/gen-icons.js, zlib murni tanpa native dep)
+- [x] shadcn/ui components: button, card, input, label, badge, select (Radix), skeleton, sonner toast
+- [x] Dashboard React: stat cards, filter (category/status/search/tag), endpoint cards, actions Scrape/Validate/Export/Test, tag chips klikable
+- [x] Detail page React: /endpoint/:id (fetch API, validate/delete/test)
+- [x] Express: serve dist/www static + SPA fallback; EJS views dihapus; endpoint baru GET /api/tags
+- [x] Build pipeline: tsc + vite build frontend (copy-static.js dihapus, ejs/@types/ejs di-uninstall)
+- [x] Smoke test: shell SPA, manifest.webmanifest, sw.js, API routes
+- [x] README diupdate (PWA install, struktur baru)
+
 ## Categories
 - 🤖 Text Generation (ChatGPT-compatible, Llama, etc.)
 - 🎨 Image Generation (Stable Diffusion, Flux, etc.)

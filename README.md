@@ -12,7 +12,7 @@ Aplikasi Node.js/TypeScript untuk **mengumpulkan, memvalidasi, dan mengkategorik
 - 🔐 **Deteksi auth** — termasuk API yang butuh API key (ditandai + catatan)
 - 💾 **SQLite storage** — no native dependencies (pakai `node:sqlite` bawaan Node)
 - 📄 **Export JSON/CSV**
-- 🌐 **Web UI dashboard** dengan filter, search, dan aksi langsung
+- 🌐 **Web UI PWA** (React + shadcn/ui) — installable, offline app shell, dark/light mode
 - 🧪 **AI Model Tester** terintegrasi — tes endpoint & API key langsung dari `/tester/` (chat, tools, vision, streaming, compare)
 - 💻 **CLI lengkap** untuk semua operasi
 
@@ -65,21 +65,27 @@ npm run web
 | `npm run seed` | Seed dengan API free terkenal |
 | `npm run tester` | Jalanin Model Tester standalone di port 3000 |
 
-## 🌐 Web UI
+## 🌐 Web UI (PWA)
 
 ```
-npm run web
+npm run build && npm run web
 ```
 
 Dashboard di `http://localhost:3000`:
 
+- **React SPA** (Vite + Tailwind v4 + shadcn/ui) — dashboard + detail page client-side
 - Stat card: total / active / dead / unknown
 - Filter kategori, status, search, dan **tag** (dropdown + klik tag pada kartu endpoint)
 - List endpoint dengan badge status, auth, response time, tags
 - Tombol aksi: **Scrape Now**, **Validate All**, **Validate per endpoint**, **Export JSON/CSV**, **Delete**
-- Detail page per endpoint
+- Tombol **🧪 Test** per endpoint → buka Model Tester dengan URL endpoint terisi otomatis
 - Link navbar **🧪 Tester** → buka `http://localhost:3000/tester/`
-- Tombol **🧪 Test** di tiap kartu endpoint (dan halaman detail) → buka Model Tester dengan URL endpoint terisi otomatis
+- 🌙 **Dark/light mode** (disimpan di localStorage)
+- ⚡ **PWA** — installable dari browser (manifest + service worker, app shell offline)
+
+### 📲 Install sebagai PWA
+
+Buka `http://localhost:3000` di Chrome/Edge → klik ikon **Install** di address bar (atau menu ⋮ → *Install app / Install DictionAI*). Aplikasi berjalan fullscreen seperti app native; data tetap perlu koneksi saat fitur scrape/validate dieksekusi.
 
 ### 🔬 AI Model Tester (`/tester/`)
 
@@ -103,6 +109,7 @@ npm run tester
 | Endpoint | Method | Deskripsi |
 |----------|--------|-----------|
 | `/api/stats` | GET | Statistik |
+| `/api/tags` | GET | Daftar tag + jumlah (untuk dropdown filter) |
 | `/api/endpoints` | GET | List (filter via query: `category`, `status`, `search`, `provider`, `tag`, `requiresAuth`) |
 | `/api/endpoints/:id` | GET | Detail endpoint |
 | `/api/endpoints/:id` | DELETE | Hapus endpoint |
@@ -130,11 +137,14 @@ src/
 │   └── categorize.ts         # Auto-kategorisasi + deteksi auth (keyword-based)
 ├── storage/
 │   └── db.ts                 # node:sqlite storage layer (upsert, query, stats)
-├── web/
-│   ├── server.ts             # Express app (listen hanya saat dijalankan langsung)
-│   ├── routes.ts             # Web pages + REST API
-│   ├── tester.ts             # Mount model-tester (tools/model-tester) di /tester/
-│   └── views/                # EJS templates + CSS
+└── web/
+    ├── server.ts             # Express app: API + SPA fallback (listen hanya saat dijalankan langsung)
+    ├── routes.ts             # REST API
+    ├── tester.ts             # Mount model-tester (tools/model-tester) di /tester/
+frontend/                     # React SPA (Vite + Tailwind v4 + shadcn/ui + PWA)
+├── vite.config.ts            # Build config + vite-plugin-pwa (manifest + SW)
+├── src/                      # Komponen React, pages, lib/api.ts
+└── public/                   # favicon + icons (di-generate scripts/gen-icons.js)
 tools/
 └── model-tester/             # Vendor AI Model Tester (server.js + public/ + LICENSE)
 ```
