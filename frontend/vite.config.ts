@@ -34,6 +34,9 @@ export default defineConfig({
       },
       workbox: {
         navigateFallback: "/index.html",
+        // /tester is the vendored Model Tester sub-app — never serve the SPA
+        // shell for its navigation requests.
+        navigateFallbackDenylist: [/^\/tester/],
         globPatterns: ["**/*.{js,css,html,svg,png,woff2}"],
         globIgnores: ["**/sw.js", "**/workbox-*.js"],
       },
