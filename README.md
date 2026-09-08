@@ -78,8 +78,8 @@ Dashboard di `http://localhost:3000`:
 - Filter kategori, status, search, dan **tag** (dropdown + klik tag pada kartu endpoint)
 - List endpoint dengan badge status, auth, response time, tags
 - Tombol aksi: **Scrape Now**, **Validate All**, **Validate per endpoint**, **Export JSON/CSV**, **Delete**
-- Tombol **🧪 Test** per endpoint → buka Model Tester dengan URL endpoint terisi otomatis
-- Link navbar **🧪 Tester** → buka `http://localhost:3000/tester/`
+- Tombol **🧪 Test** per endpoint hanya tampil jika URL endpoint mengandung path `/v1` atau subpath setelahnya (misalnya `/v1/chat`) dan membuka Model Tester dengan URL terisi otomatis
+- Link navbar **🧪 Tester** → buka `http://localhost:3000/tester/`; akses manual tetap bisa memakai endpoint non-`/v1`
 - 🌙 **Dark/light mode** (disimpan di localStorage)
 - ⚡ **PWA** — installable dari browser (manifest + service worker, app shell offline)
 
